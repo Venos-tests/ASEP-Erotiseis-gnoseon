@@ -1,0 +1,22 @@
+{
+  "version": "1.1",
+  "total_questions": 1989,
+  "sections": [
+    { "id": 1,  "slug": "syntagmatiko",  "label": "Συνταγματικό Δίκαιο",                                                          "count": 265, "weight": 0.1332, "file": "questions/syntagmatiko.json" },
+    { "id": 2,  "slug": "dioikitiko",    "label": "Διοικητικό Δίκαιο",                                                            "count": 303, "weight": 0.1523, "file": "questions/dioikitiko.json" },
+    { "id": 3,  "slug": "ee_thesmoi",    "label": "Ευρωπαϊκοί Θεσμοί και Δίκαιο",                                                "count": 189, "weight": 0.0950, "file": "questions/ee_thesmoi.json" },
+    { "id": 4,  "slug": "oikonomikes",   "label": "Οικονομικές Επιστήμες",                                                        "count": 335, "weight": 0.1685, "file": "questions/oikonomikes.json" },
+    { "id": 5,  "slug": "pliroforiki",   "label": "Πληροφορική και Ψηφιακή Διακυβέρνηση",                                        "count": 257, "weight": 0.1292, "file": "questions/pliroforiki.json" },
+    { "id": 6,  "slug": "istoria",       "label": "Σύγχρονη Ιστορία της Ελλάδας (1864-σήμερα)",                                  "count": 144, "weight": 0.0724, "file": "questions/istoria.json" },
+    { "id": 7,  "slug": "ypallilikos",   "label": "Κώδικας Κατάστασης Πολιτικών Διοικητικών Υπαλλήλων και Υπαλλήλων Ν.Π.Δ.Δ.", "count": 121, "weight": 0.0608, "file": "questions/ypallilikos.json" },
+    { "id": 8,  "slug": "gdpr",          "label": "Γενικός Κανονισμός για την Προστασία Δεδομένων (GDPR)",                       "count": 30,  "weight": 0.0151, "file": "questions/gdpr.json" },
+    { "id": 9,  "slug": "dioik_epix",    "label": "Διοίκηση Επιχειρήσεων και Οργανισμών",                                        "count": 108, "weight": 0.0543, "file": "questions/dioik_epix.json" },
+    { "id": 10, "slug": "hr",            "label": "Διοίκηση Ανθρώπινου Δυναμικού",                                               "count": 151, "weight": 0.0759, "file": "questions/hr.json" },
+    { "id": 11, "slug": "kodikos_simper","label": "Κώδικας Συμπεριφοράς Δημοσίων Υπαλλήλων",                                     "count": 86,  "weight": 0.0432, "file": "questions/kodikos_simper.json" }
+  ],
+  "test_modes": {
+    "official":  { "questions": 25, "time_seconds": 1500 },
+    "drill_20":  { "questions": 20, "time_seconds": null },
+    "drill_10":  { "questions": 10, "time_seconds": null }
+  }
+}
