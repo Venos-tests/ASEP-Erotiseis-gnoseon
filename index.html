@@ -518,8 +518,21 @@ let timerInterval= null;
 let activeMode   = 'official';
 let activeSlugs  = ['all'];
 
-// localStorage progress
-let progress = JSON.parse(localStorage.getItem('asep_progress') || '{}');
+// Safe storage wrapper — δουλεύει και μέσα σε iframe (Hostinger κτλ)
+const safeStorage = {
+  _mem: {},
+  get(key) {
+    try { return localStorage.getItem(key); }
+    catch(e) { return this._mem[key] || null; }
+  },
+  set(key, val) {
+    try { localStorage.setItem(key, val); }
+    catch(e) { this._mem[key] = val; }
+  }
+};
+
+// progress
+let progress = JSON.parse(safeStorage.get('asep_progress') || '{}');
 // progress[qid] = { seen: N, correct: N, lastSeen: timestamp, interval: days }
 
 // ============================================================
@@ -706,7 +719,7 @@ function answer(btn, key, q) {
   p.lastSeen = Date.now();
   if (correct) { score.correct++; p.correct++; p.interval = Math.min((p.interval || 1) * 2, 30); }
   else         { score.wrong++;   p.interval = 1; }
-  localStorage.setItem('asep_progress', JSON.stringify(progress));
+  safeStorage.set('asep_progress', JSON.stringify(progress));
 }
 
 function nextQuestion() {
