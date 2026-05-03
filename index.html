@@ -67,6 +67,18 @@
     border-radius: 20px;
     letter-spacing: 0.5px;
   }
+  .admin-link {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.3);
+    color: rgba(255,255,255,0.7);
+    font-size: 0.72rem;
+    padding: 3px 10px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.15s;
+    margin-left: 8px;
+  }
+  .admin-link:hover { background: rgba(255,255,255,0.1); color: #fff; }
 
   /* MAIN LAYOUT */
   main {
@@ -125,6 +137,10 @@
     color: var(--asep-cyan);
     font-size: 0.72rem; font-weight: 700;
     padding: 2px 8px; border-radius: 20px;
+  }
+  .mode-card.locked-mode .mode-icon::after {
+    content: ' 🔒';
+    font-size: 0.9rem;
   }
 
   /* SECTION FILTER */
@@ -364,6 +380,228 @@
   }
   .btn-secondary:hover { background: var(--asep-light); }
 
+  /* LOG STATUS */
+  .log-status {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: 12px;
+    min-height: 20px;
+  }
+  .log-status.ok { color: var(--asep-green); }
+  .log-status.err { color: var(--asep-red); }
+
+  /* ======================================================
+     PIN MODAL
+  ====================================================== */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.55);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 1000;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.2s;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+  .modal-box {
+    background: #fff;
+    border-radius: 10px;
+    padding: 36px 32px;
+    width: 100%; max-width: 380px;
+    box-shadow: 0 8px 40px rgba(0,56,118,0.22);
+    transform: translateY(12px);
+    transition: transform 0.2s;
+    text-align: center;
+  }
+  .modal-overlay.open .modal-box { transform: translateY(0); }
+
+  .modal-icon { font-size: 2.4rem; margin-bottom: 12px; }
+  .modal-title {
+    font-family: 'GFS Didot', serif;
+    font-size: 1.3rem;
+    color: var(--asep-blue);
+    margin-bottom: 6px;
+  }
+  .modal-sub {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    margin-bottom: 24px;
+    line-height: 1.5;
+  }
+
+  .pin-input-wrap {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .pin-digit {
+    width: 52px; height: 60px;
+    border: 2px solid var(--asep-border);
+    border-radius: var(--radius);
+    font-size: 1.6rem; font-weight: 700;
+    text-align: center;
+    color: var(--asep-blue);
+    background: var(--asep-gray);
+    transition: border-color 0.15s;
+    caret-color: var(--asep-cyan);
+  }
+  .pin-digit:focus {
+    outline: none;
+    border-color: var(--asep-cyan);
+    background: #fff;
+  }
+  .pin-digit.shake {
+    animation: shake 0.35s ease;
+    border-color: var(--asep-red) !important;
+    background: #FFEBEE;
+  }
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    20%      { transform: translateX(-6px); }
+    40%      { transform: translateX(6px); }
+    60%      { transform: translateX(-4px); }
+    80%      { transform: translateX(4px); }
+  }
+
+  .pin-error {
+    font-size: 0.85rem;
+    color: var(--asep-red);
+    min-height: 20px;
+    margin-bottom: 16px;
+  }
+
+  .btn-pin-submit {
+    width: 100%;
+    background: var(--asep-blue); color: #fff;
+    border: none; border-radius: var(--radius);
+    padding: 13px;
+    font-size: 0.95rem; font-weight: 700;
+    cursor: pointer; transition: background 0.15s;
+    margin-bottom: 10px;
+  }
+  .btn-pin-submit:hover { background: var(--asep-cyan); }
+
+  .btn-pin-cancel {
+    background: transparent; color: var(--text-muted);
+    border: none; font-size: 0.88rem;
+    cursor: pointer; padding: 4px;
+    transition: color 0.12s;
+  }
+  .btn-pin-cancel:hover { color: var(--asep-red); }
+
+  /* ======================================================
+     ADMIN PANEL SCREEN
+  ====================================================== */
+  .admin-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 24px; flex-wrap: wrap; gap: 12px;
+  }
+  .admin-title {
+    font-family: 'GFS Didot', serif;
+    font-size: 1.4rem; color: var(--asep-blue);
+  }
+  .admin-filters {
+    display: flex; gap: 10px; flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+  .admin-filters select, .admin-filters input {
+    border: 1.5px solid var(--asep-border);
+    border-radius: var(--radius);
+    padding: 7px 12px;
+    font-size: 0.88rem;
+    color: var(--text-main);
+    background: #fff;
+  }
+  .admin-filters select:focus, .admin-filters input:focus {
+    outline: none; border-color: var(--asep-cyan);
+  }
+
+  .admin-summary {
+    display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 24px;
+  }
+  .admin-stat {
+    background: #fff;
+    border: 1px solid var(--asep-border);
+    border-radius: var(--radius);
+    padding: 14px 20px; flex: 1; min-width: 120px;
+    text-align: center;
+  }
+  .admin-stat .as-val { font-size: 1.6rem; font-weight: 700; color: var(--asep-blue); }
+  .admin-stat .as-lbl { font-size: 0.76rem; color: var(--text-muted); }
+
+  .admin-table-wrap {
+    background: #fff;
+    border: 1px solid var(--asep-border);
+    border-radius: var(--radius);
+    overflow-x: auto;
+    margin-bottom: 24px;
+  }
+  table {
+    width: 100%; border-collapse: collapse;
+    font-size: 0.88rem;
+  }
+  thead { background: var(--asep-blue); color: #fff; }
+  thead th {
+    padding: 11px 14px; text-align: left;
+    font-weight: 600; font-size: 0.82rem;
+    letter-spacing: 0.3px;
+  }
+  tbody tr { border-bottom: 1px solid var(--asep-border); }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--asep-light); }
+  tbody td { padding: 10px 14px; }
+  .td-pass { color: var(--asep-green); font-weight: 700; }
+  .td-fail { color: var(--asep-red); font-weight: 700; }
+  .td-pct-bar {
+    display: flex; align-items: center; gap: 8px;
+  }
+  .mini-bar-wrap {
+    flex: 1; height: 6px; background: var(--asep-border);
+    border-radius: 3px; overflow: hidden; min-width: 60px;
+  }
+  .mini-bar-fill {
+    height: 100%; border-radius: 3px;
+    background: var(--asep-cyan);
+  }
+  .mini-bar-fill.good { background: var(--asep-green); }
+  .mini-bar-fill.bad  { background: var(--asep-red); }
+
+  .admin-empty {
+    text-align: center; padding: 40px; color: var(--text-muted);
+    font-size: 0.92rem;
+  }
+
+  .user-chart-section {
+    background: #fff;
+    border: 1px solid var(--asep-border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 24px;
+  }
+  .user-chart-section h3 {
+    font-size: 0.92rem; font-weight: 700;
+    color: var(--asep-blue); margin-bottom: 16px;
+  }
+  .chart-bars {
+    display: flex; align-items: flex-end; gap: 6px;
+    height: 100px; overflow-x: auto;
+  }
+  .chart-bar-wrap {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 4px; flex-shrink: 0; min-width: 36px;
+  }
+  .chart-bar {
+    width: 28px; background: var(--asep-cyan);
+    border-radius: 3px 3px 0 0;
+    transition: height 0.3s;
+    cursor: default;
+  }
+  .chart-bar:hover { background: var(--asep-blue); }
+  .chart-bar-lbl { font-size: 0.65rem; color: var(--text-muted); text-align: center; }
+  .chart-bar-val { font-size: 0.7rem; font-weight: 700; color: var(--asep-blue); }
+
   /* FOOTER */
   footer {
     text-align: center;
@@ -382,6 +620,16 @@
     padding: 14px 18px; margin: 12px 0;
     font-size: 0.9rem;
   }
+
+  .info-note {
+    background: var(--asep-light);
+    border: 1px solid #B3CCE8;
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    font-size: 0.83rem;
+    color: var(--asep-blue);
+    margin-bottom: 16px;
+  }
 </style>
 </head>
 <body>
@@ -390,6 +638,7 @@
   <a class="logo" href="#"><span>ΑΣΕΠ</span> 2026</a>
   <div class="subtitle">Τεστ Γενικών Γνώσεων<br>Προετοιμασία &amp; Εξάσκηση</div>
   <div class="badge">BETA</div>
+  <button class="admin-link" onclick="openAdminLogin()">⚙ Admin</button>
 </header>
 
 <main>
@@ -400,22 +649,22 @@
     <p class="home-sub">Επιλέξτε τύπο τεστ και ενότητες για να ξεκινήσετε.</p>
 
     <div class="mode-grid">
-      <div class="mode-card selected" data-mode="official" onclick="selectMode(this)">
+      <div class="mode-card locked-mode selected" data-mode="official" onclick="selectMode(this)">
         <div class="mode-icon">🏛️</div>
         <div class="mode-name">Επίσημο Τεστ</div>
-        <div class="mode-desc">25 ερωτήσεις, χρονόμετρο 25 λεπτών — προσομοίωση εξέτασης</div>
+        <div class="mode-desc">25 ερωτήσεις, χρονόμετρο 25 λεπτών — απαιτεί προσωπικό PIN</div>
         <div class="mode-badge">25 ΕΡ.</div>
       </div>
       <div class="mode-card" data-mode="drill_20" onclick="selectMode(this)">
         <div class="mode-icon">📝</div>
-        <div class="mode-name">Drill 20 Ερωτήσεων</div>
-        <div class="mode-desc">Εξάσκηση χωρίς χρονόμετρο — 20 ερωτήσεις</div>
+        <div class="mode-name">Mini Drill 20</div>
+        <div class="mode-desc">Ελεύθερη εξάσκηση χωρίς χρονόμετρο — 20 ερωτήσεις</div>
         <div class="mode-badge">20 ΕΡ.</div>
       </div>
       <div class="mode-card" data-mode="drill_10" onclick="selectMode(this)">
         <div class="mode-icon">⚡</div>
         <div class="mode-name">Quick Drill</div>
-        <div class="mode-desc">Γρήγορη εξάσκηση χωρίς χρονόμετρο — 10 ερωτήσεις</div>
+        <div class="mode-desc">Ελεύθερη γρήγορη εξάσκηση χωρίς χρονόμετρο — 10 ερωτήσεις</div>
         <div class="mode-badge">10 ΕΡ.</div>
       </div>
     </div>
@@ -447,7 +696,7 @@
     </div>
 
     <div id="home-error" class="error-box" style="display:none"></div>
-    <button class="btn-start" id="btn-start" onclick="startQuiz()" disabled>Φόρτωση ερωτήσεων...</button>
+    <button class="btn-start" id="btn-start" onclick="handleStartClick()" disabled>Φόρτωση ερωτήσεων...</button>
   </div>
 
   <!-- QUIZ SCREEN -->
@@ -486,8 +735,64 @@
       </div>
       <div class="btn-row">
         <button class="btn-secondary" onclick="showScreen('screen-home')">← Αρχική</button>
-        <button class="btn-start" style="width:auto;padding:10px 28px" onclick="startQuiz()">Νέο Τεστ</button>
+        <button class="btn-start" style="width:auto;padding:10px 28px" onclick="handleStartClick()">Νέο Τεστ</button>
       </div>
+      <div class="log-status" id="log-status"></div>
+    </div>
+  </div>
+
+  <!-- ADMIN SCREEN -->
+  <div id="screen-admin" class="screen">
+    <div class="admin-header">
+      <div class="admin-title">📊 Admin Panel — Επιδόσεις</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn-secondary" onclick="refreshAdminData()" style="font-size:0.82rem;padding:7px 14px">🔄 Ανανέωση</button>
+        <button class="btn-secondary" onclick="showScreen('screen-home')" style="font-size:0.82rem;padding:7px 14px">← Έξοδος</button>
+      </div>
+    </div>
+
+    <div class="admin-summary" id="admin-summary">
+      <div class="admin-stat"><div class="as-val" id="adm-total-tests">—</div><div class="as-lbl">Σύνολο Τεστ</div></div>
+      <div class="admin-stat"><div class="as-val" id="adm-total-users">—</div><div class="as-lbl">Ενεργοί Χρήστες</div></div>
+      <div class="admin-stat"><div class="as-val" id="adm-avg-score">—</div><div class="as-lbl">Μέσος Βαθμός</div></div>
+      <div class="admin-stat"><div class="as-val" id="adm-pass-rate">—</div><div class="as-lbl">Ποσοστό Επιτυχίας</div></div>
+    </div>
+
+    <div class="user-chart-section" id="user-chart-section" style="display:none">
+      <h3 id="chart-title">Πρόοδος Χρήστη</h3>
+      <div class="chart-bars" id="chart-bars"></div>
+    </div>
+
+    <div class="admin-filters">
+      <select id="adm-filter-user" onchange="renderAdminTable()">
+        <option value="all">Όλοι οι χρήστες</option>
+      </select>
+      <select id="adm-filter-section" onchange="renderAdminTable()">
+        <option value="all">Όλες οι ενότητες</option>
+      </select>
+      <select id="adm-filter-result" onchange="renderAdminTable()">
+        <option value="all">Όλα τα αποτελέσματα</option>
+        <option value="pass">✓ Επιτυχία</option>
+        <option value="fail">✗ Αποτυχία</option>
+      </select>
+    </div>
+
+    <div class="admin-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Ημερομηνία</th>
+            <th>Χρήστης</th>
+            <th>Ενότητα</th>
+            <th>Βαθμός</th>
+            <th>Σκορ</th>
+            <th>Χρόνος</th>
+            <th>Αποτέλεσμα</th>
+          </tr>
+        </thead>
+        <tbody id="admin-tbody"></tbody>
+      </table>
+      <div class="admin-empty" id="admin-empty" style="display:none">Δεν βρέθηκαν εγγραφές.</div>
     </div>
   </div>
 
@@ -497,43 +802,98 @@
   Πηγή ερωτήσεων: <a href="https://info.asep.gr/mitroo-thematon-gnoseon" target="_blank" style="color:var(--asep-cyan)">ΑΣΕΠ — Μητρώο Θεμάτων Γνώσεων</a> &nbsp;|&nbsp; Εκπαιδευτική χρήση
 </footer>
 
+<!-- ============================================================
+     PIN MODAL (για Επίσημο Τεστ)
+============================================================ -->
+<div class="modal-overlay" id="pin-modal">
+  <div class="modal-box">
+    <div class="modal-icon">🔐</div>
+    <div class="modal-title">Επίσημο Τεστ</div>
+    <div class="modal-sub">Εισάγετε το προσωπικό σας 4ψήφιο PIN για να συνεχίσετε.</div>
+    <div class="pin-input-wrap" id="pin-digits">
+      <input class="pin-digit" maxlength="1" type="password" inputmode="numeric" pattern="[0-9]" autocomplete="off" id="pin0">
+      <input class="pin-digit" maxlength="1" type="password" inputmode="numeric" pattern="[0-9]" autocomplete="off" id="pin1">
+      <input class="pin-digit" maxlength="1" type="password" inputmode="numeric" pattern="[0-9]" autocomplete="off" id="pin2">
+      <input class="pin-digit" maxlength="1" type="password" inputmode="numeric" pattern="[0-9]" autocomplete="off" id="pin3">
+    </div>
+    <div class="pin-error" id="pin-error"></div>
+    <button class="btn-pin-submit" onclick="submitPin()">Είσοδος →</button>
+    <br>
+    <button class="btn-pin-cancel" onclick="closePinModal()">Ακύρωση</button>
+  </div>
+</div>
+
+<!-- ============================================================
+     ADMIN LOGIN MODAL
+============================================================ -->
+<div class="modal-overlay" id="admin-modal">
+  <div class="modal-box">
+    <div class="modal-icon">⚙️</div>
+    <div class="modal-title">Admin Panel</div>
+    <div class="modal-sub">Εισάγετε τον κωδικό διαχειριστή.</div>
+    <div class="pin-input-wrap" id="admin-digits">
+      <input class="pin-digit" maxlength="1" type="password" inputmode="numeric" pattern="[0-9]" autocomplete="off" id="adm0">
+      <input class="pin-digit" maxlength="1" type="password" inputmode="numeric" pattern="[0-9]" autocomplete="off" id="adm1">
+      <input class="pin-digit" maxlength="1" type="password" inputmode="numeric" pattern="[0-9]" autocomplete="off" id="adm2">
+      <input class="pin-digit" maxlength="1" type="password" inputmode="numeric" pattern="[0-9]" autocomplete="off" id="adm3">
+    </div>
+    <div class="pin-error" id="admin-error"></div>
+    <button class="btn-pin-submit" onclick="submitAdminPin()">Είσοδος →</button>
+    <br>
+    <button class="btn-pin-cancel" onclick="closeAdminModal()">Ακύρωση</button>
+  </div>
+</div>
+
 <script>
 // ============================================================
-// CONFIG — αλλάξτε το REPO_BASE στο δικό σας GitHub raw URL
+// ╔══════════════════════════════════════════════════════════╗
+// ║  ΡΥΘΜΙΣΕΙΣ — ΑΛΛΑΞΤΕ ΜΟΝΟ ΑΥΤΟ ΤΟ ΤΜΗΜΑ              ║
+// ╚══════════════════════════════════════════════════════════╝
 // ============================================================
+
 const REPO_BASE = 'https://raw.githubusercontent.com/Venos-tests/ASEP-Erotiseis-gnoseon/main/';
 const INDEX_URL = REPO_BASE + 'index.json';
+
+// Google Apps Script endpoint — βάλτε το URL από το deploy του Apps Script
+// Οδηγίες: https://github.com/Venos-tests/ASEP-Erotiseis-gnoseon#apps-script
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyR4HTBpnv1_cwjbj2BANa-w6FJhpyDJQ99fWjd8uUh7VfuzmwiO4_1Pn1fy7XojzMn/exec';
+
+// PIN χρηστών: { "PIN": "Όνομα" }
+// ΣΗΜΑΝΤΙΚΟ: Αλλάξτε τα PINs πριν δημοσιεύσετε!
+const USERS = {
+  "1001": "Χρήστης Α",
+  "1002": "Χρήστης Β",
+  "1003": "Χρήστης Γ",
+  "1004": "Χρήστης Δ",
+  // Προσθέστε όσους θέλετε...
+};
+
+// Master PIN για admin panel
+const ADMIN_PIN = "3462"; // ΑΛΛΑΞΤΕ ΤΟ!
 
 // ============================================================
 // STATE
 // ============================================================
-let indexData    = null;   // parsed index.json
-let loadedData   = {};     // slug -> array of questions
-let allQuestions = [];     // merged pool για active session
-let sessionQ     = [];     // shuffled subset για το τρέχον τεστ
+let indexData    = null;
+let loadedData   = {};
+let allQuestions = [];
+let sessionQ     = [];
 let currentIdx   = 0;
 let score        = { correct: 0, wrong: 0 };
 let startTime    = null;
 let timerInterval= null;
 let activeMode   = 'official';
 let activeSlugs  = ['all'];
+let currentUser  = null; // { pin, name } — null αν δεν έχει γίνει login
+let adminData    = [];   // cache από Google Sheet
 
-// Safe storage wrapper — δουλεύει και μέσα σε iframe (Hostinger κτλ)
 const safeStorage = {
   _mem: {},
-  get(key) {
-    try { return localStorage.getItem(key); }
-    catch(e) { return this._mem[key] || null; }
-  },
-  set(key, val) {
-    try { localStorage.setItem(key, val); }
-    catch(e) { this._mem[key] = val; }
-  }
+  get(k)   { try { return localStorage.getItem(k); }        catch(e) { return this._mem[k]||null; } },
+  set(k,v) { try { localStorage.setItem(k, v); }            catch(e) { this._mem[k]=v; } }
 };
 
-// progress
 let progress = JSON.parse(safeStorage.get('asep_progress') || '{}');
-// progress[qid] = { seen: N, correct: N, lastSeen: timestamp, interval: days }
 
 // ============================================================
 // INIT
@@ -551,6 +911,8 @@ async function init() {
   } catch(e) {
     showError('Αδυναμία φόρτωσης δεδομένων. Ελέγξτε τη σύνδεση ή το repository.<br><small>' + e.message + '</small>');
   }
+  setupPinInputs('pin-digits', 'pin', submitPin);
+  setupPinInputs('admin-digits', 'adm', submitAdminPin);
 }
 
 function buildChips() {
@@ -566,7 +928,6 @@ function buildChips() {
 }
 
 async function loadAvailableSections() {
-  // Try to load each section; silently skip if 404
   for (const sec of indexData.sections) {
     if (loadedData[sec.slug]) continue;
     try {
@@ -574,7 +935,7 @@ async function loadAvailableSections() {
       if (!res.ok) continue;
       const data = await res.json();
       loadedData[sec.slug] = Array.isArray(data) ? data : [];
-    } catch(e) { /* not yet uploaded */ }
+    } catch(e) {}
   }
   buildAllQuestions();
 }
@@ -585,9 +946,7 @@ function buildAllQuestions() {
   indexData.sections.forEach(sec => {
     if (!useAll && !activeSlugs.includes(sec.slug)) return;
     const qs = loadedData[sec.slug] || [];
-    qs.forEach(q => {
-      allQuestions.push({ ...q, _slug: sec.slug, _label: sec.label });
-    });
+    qs.forEach(q => allQuestions.push({ ...q, _slug: sec.slug, _label: sec.label }));
   });
   updateStats();
 }
@@ -599,18 +958,15 @@ function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
-
 function showError(msg) {
   const el = document.getElementById('home-error');
   el.innerHTML = msg; el.style.display = 'block';
 }
-
 function selectMode(el) {
   document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('selected'));
   el.classList.add('selected');
   activeMode = el.dataset.mode;
 }
-
 function toggleChip(el) {
   if (el.dataset.slug === 'all') {
     document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
@@ -625,29 +981,130 @@ function toggleChip(el) {
   }
   buildAllQuestions();
 }
-
 function updateStats() {
   document.getElementById('stat-total').textContent = allQuestions.length || '—';
   const done    = Object.values(progress).filter(p => p.seen > 0).length;
   const correct = Object.values(progress).reduce((a, p) => a + (p.correct || 0), 0);
-  const total   = Object.values(progress).reduce((a, p) => a + (p.seen || 0), 0);
-  document.getElementById('stat-done').textContent = done;
+  const total   = Object.values(progress).reduce((a, p) => a + (p.seen   || 0), 0);
+  document.getElementById('stat-done').textContent    = done;
   document.getElementById('stat-correct').textContent = correct;
-  document.getElementById('stat-pct').textContent = total > 0 ? Math.round(correct/total*100) + '%' : '—';
+  document.getElementById('stat-pct').textContent     = total > 0 ? Math.round(correct/total*100) + '%' : '—';
 }
 
 // ============================================================
-// SRS SAMPLING (SM-2 simplified)
+// PIN MODAL — χρήστες
+// ============================================================
+function handleStartClick() {
+  if (activeMode === 'official') {
+    openPinModal();
+  } else {
+    currentUser = null;
+    startQuiz();
+  }
+}
+
+function openPinModal() {
+  clearPinInputs('pin');
+  document.getElementById('pin-error').textContent = '';
+  document.getElementById('pin-modal').classList.add('open');
+  setTimeout(() => document.getElementById('pin0').focus(), 150);
+}
+function closePinModal() {
+  document.getElementById('pin-modal').classList.remove('open');
+}
+
+function setupPinInputs(wrapperId, prefix, onComplete) {
+  for (let i = 0; i < 4; i++) {
+    const el = document.getElementById(prefix + i);
+    el.addEventListener('input', function() {
+      this.value = this.value.replace(/\D/g,'').slice(-1);
+      if (this.value && i < 3) document.getElementById(prefix + (i+1)).focus();
+      if (i === 3 && this.value) onComplete();
+    });
+    el.addEventListener('keydown', function(e) {
+      if (e.key === 'Backspace' && !this.value && i > 0)
+        document.getElementById(prefix + (i-1)).focus();
+      if (e.key === 'Enter') onComplete();
+    });
+    el.addEventListener('paste', function(e) {
+      e.preventDefault();
+      const text = (e.clipboardData||window.clipboardData).getData('text').replace(/\D/g,'').slice(0,4);
+      text.split('').forEach((ch, idx) => {
+        const inp = document.getElementById(prefix + idx);
+        if (inp) inp.value = ch;
+      });
+      if (text.length === 4) onComplete();
+    });
+  }
+}
+
+function getPinValue(prefix) {
+  return [0,1,2,3].map(i => document.getElementById(prefix+i).value).join('');
+}
+function clearPinInputs(prefix) {
+  [0,1,2,3].forEach(i => { document.getElementById(prefix+i).value = ''; });
+}
+function shakePinInputs(prefix) {
+  [0,1,2,3].forEach(i => {
+    const el = document.getElementById(prefix+i);
+    el.classList.remove('shake');
+    void el.offsetWidth; // reflow
+    el.classList.add('shake');
+    setTimeout(() => el.classList.remove('shake'), 400);
+  });
+}
+
+function submitPin() {
+  const pin  = getPinValue('pin');
+  const name = USERS[pin];
+  if (!name) {
+    document.getElementById('pin-error').textContent = 'Λανθασμένο PIN. Δοκιμάστε ξανά.';
+    shakePinInputs('pin');
+    clearPinInputs('pin');
+    setTimeout(() => document.getElementById('pin0').focus(), 50);
+    return;
+  }
+  currentUser = { pin, name };
+  closePinModal();
+  startQuiz();
+}
+
+// ============================================================
+// ADMIN LOGIN MODAL
+// ============================================================
+function openAdminLogin() {
+  clearPinInputs('adm');
+  document.getElementById('admin-error').textContent = '';
+  document.getElementById('admin-modal').classList.add('open');
+  setTimeout(() => document.getElementById('adm0').focus(), 150);
+}
+function closeAdminModal() {
+  document.getElementById('admin-modal').classList.remove('open');
+}
+function submitAdminPin() {
+  const pin = getPinValue('adm');
+  if (pin !== ADMIN_PIN) {
+    document.getElementById('admin-error').textContent = 'Λανθασμένος κωδικός διαχειριστή.';
+    shakePinInputs('adm');
+    clearPinInputs('adm');
+    setTimeout(() => document.getElementById('adm0').focus(), 50);
+    return;
+  }
+  closeAdminModal();
+  openAdminPanel();
+}
+
+// ============================================================
+// SRS SAMPLING
 // ============================================================
 function srsScore(q) {
   const p = progress[q.id];
-  if (!p || p.seen === 0) return 1000; // νέα ερώτηση → υψηλή προτεραιότητα
+  if (!p || p.seen === 0) return 1000;
   const daysSince = (Date.now() - p.lastSeen) / 86400000;
   const due = daysSince >= (p.interval || 1);
   if (due) return 500 + (1 - (p.correct / p.seen));
-  return Math.random() * 100; // όχι due → χαμηλή πιθανότητα
+  return Math.random() * 100;
 }
-
 function pickQuestions(pool, n) {
   if (pool.length === 0) return [];
   const scored = pool.map(q => ({ q, score: srsScore(q) + Math.random() * 50 }));
@@ -661,7 +1118,7 @@ function pickQuestions(pool, n) {
 function startQuiz() {
   const modes = { official: 25, drill_20: 20, drill_10: 10 };
   const n = modes[activeMode] || 25;
-  if (allQuestions.length === 0) { showError('Δεν υπάρχουν διαθέσιμες ερωτήσεις για τις επιλεγμένες ενότητες.'); return; }
+  if (allQuestions.length === 0) { showError('Δεν υπάρχουν διαθέσιμες ερωτήσεις.'); return; }
   sessionQ   = pickQuestions(allQuestions, n);
   currentIdx = 0;
   score      = { correct: 0, wrong: 0 };
@@ -678,9 +1135,9 @@ function renderQuestion() {
   const total = sessionQ.length;
   document.getElementById('q-counter').textContent = 'Ερώτηση ' + (currentIdx+1) + ' / ' + total;
   document.getElementById('q-section-mini').textContent = q._label || '';
-  document.getElementById('q-section-tag').textContent = q._label || '';
+  document.getElementById('q-section-tag').textContent  = q._label || '';
   document.getElementById('q-text').textContent = q.question;
-  document.getElementById('progress-fill').style.width = (currentIdx/total*100) + '%';
+  document.getElementById('progress-fill').style.width  = (currentIdx/total*100) + '%';
 
   const opts = document.getElementById('q-options');
   opts.innerHTML = '';
@@ -709,15 +1166,15 @@ function answer(btn, key, q) {
   }
   const fb = document.getElementById('feedback-box');
   fb.className = 'feedback-box show ' + (correct ? 'correct-fb' : 'wrong-fb');
-  fb.textContent = correct ? '✓ Σωστή απάντηση!' : '✗ Λάθος. Σωστή: ' + q.correct_answer.toUpperCase() + '. ' + q.options[q.correct_answer];
+  fb.textContent = correct
+    ? '✓ Σωστή απάντηση!'
+    : '✗ Λάθος. Σωστή: ' + q.correct_answer.toUpperCase() + '. ' + q.options[q.correct_answer];
   document.getElementById('btn-next').className = 'btn-next show';
 
-  // Update progress (SRS)
-  if (!progress[q.id]) progress[q.id] = { seen: 0, correct: 0, lastSeen: 0, interval: 1 };
+  if (!progress[q.id]) progress[q.id] = { seen:0, correct:0, lastSeen:0, interval:1 };
   const p = progress[q.id];
-  p.seen++;
-  p.lastSeen = Date.now();
-  if (correct) { score.correct++; p.correct++; p.interval = Math.min((p.interval || 1) * 2, 30); }
+  p.seen++; p.lastSeen = Date.now();
+  if (correct) { score.correct++; p.correct++; p.interval = Math.min((p.interval||1)*2, 30); }
   else         { score.wrong++;   p.interval = 1; }
   safeStorage.set('asep_progress', JSON.stringify(progress));
 }
@@ -733,15 +1190,228 @@ function endQuiz() {
   const elapsed = Math.round((Date.now() - startTime) / 1000);
   const total   = sessionQ.length;
   const pct     = Math.round(score.correct / total * 100);
-  document.getElementById('res-score').innerHTML = pct + '<span>%</span>';
+
+  document.getElementById('res-score').innerHTML   = pct + '<span>%</span>';
   document.getElementById('res-correct').textContent = score.correct;
   document.getElementById('res-wrong').textContent   = score.wrong;
   document.getElementById('res-time').textContent    = formatTime(elapsed);
   const grade = document.getElementById('res-grade');
   if (pct >= 60) { grade.textContent = '✓ ΕΠΙΤΥΧΙΑ'; grade.className = 'results-grade pass'; }
   else           { grade.textContent = '✗ ΑΠΟΤΥΧΙΑ'; grade.className = 'results-grade fail'; }
+
   updateStats();
   showScreen('screen-results');
+
+  // Αποστολή αποτελέσματος μόνο για Επίσημο Τεστ
+  if (activeMode === 'official' && currentUser) {
+    logScore(currentUser, score.correct, total, pct, elapsed);
+  }
+}
+
+// ============================================================
+// GOOGLE SHEETS LOGGING
+// ============================================================
+async function logScore(user, correct, total, pct, elapsedSec) {
+  const statusEl = document.getElementById('log-status');
+  statusEl.textContent = '⏳ Αποθήκευση αποτελέσματος...';
+  statusEl.className = 'log-status';
+
+  // Ενότητες που εξετάστηκαν
+  const sections = [...new Set(sessionQ.map(q => q._label))].join(', ');
+
+  const payload = {
+    pin:      user.pin,
+    name:     user.name,
+    sections: sections || 'Όλες',
+    correct:  correct,
+    total:    total,
+    pct:      pct,
+    elapsed:  elapsedSec,
+    ts:       new Date().toISOString()
+  };
+
+  try {
+    if (APPS_SCRIPT_URL === 'ΒΑΛΤΕ_ΤΟ_APPS_SCRIPT_URL_ΕΔΩ') {
+      // Demo mode — αποθηκεύει τοπικά
+      const local = JSON.parse(safeStorage.get('asep_scores') || '[]');
+      local.push(payload);
+      safeStorage.set('asep_scores', JSON.stringify(local));
+      statusEl.textContent = '✓ Αποθηκεύτηκε τοπικά (demo — δεν έχει οριστεί Apps Script URL)';
+      statusEl.className = 'log-status ok';
+      return;
+    }
+    const res = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      mode:   'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    statusEl.textContent = '✓ Το αποτέλεσμα καταγράφηκε επιτυχώς!';
+    statusEl.className = 'log-status ok';
+  } catch(e) {
+    // Fallback: αποθήκευση τοπικά αν αποτύχει το network
+    const local = JSON.parse(safeStorage.get('asep_scores') || '[]');
+    local.push(payload);
+    safeStorage.set('asep_scores', JSON.stringify(local));
+    statusEl.textContent = '⚠ Αποθηκεύτηκε τοπικά (χωρίς σύνδεση)';
+    statusEl.className = 'log-status err';
+  }
+}
+
+// ============================================================
+// ADMIN PANEL
+// ============================================================
+async function openAdminPanel() {
+  showScreen('screen-admin');
+  await refreshAdminData();
+}
+
+async function refreshAdminData() {
+  adminData = [];
+
+  // 1. Φόρτωση από Google Sheet (μέσω Apps Script GET)
+  if (APPS_SCRIPT_URL !== 'ΒΑΛΤΕ_ΤΟ_APPS_SCRIPT_URL_ΕΔΩ') {
+    try {
+      const res  = await fetch(APPS_SCRIPT_URL + '?action=getAll');
+      const json = await res.json();
+      if (Array.isArray(json.data)) adminData = json.data;
+    } catch(e) {}
+  }
+
+  // 2. Fallback: τοπικά δεδομένα
+  const local = JSON.parse(safeStorage.get('asep_scores') || '[]');
+  if (local.length > 0) {
+    // Merge — αποφυγή duplicates με timestamp
+    const remoteTs = new Set(adminData.map(r => r.ts));
+    local.forEach(r => { if (!remoteTs.has(r.ts)) adminData.push(r); });
+  }
+
+  // Ταξινόμηση: νεότερα πρώτα
+  adminData.sort((a, b) => new Date(b.ts) - new Date(a.ts));
+
+  populateAdminFilters();
+  renderAdminSummary();
+  renderAdminTable();
+}
+
+function populateAdminFilters() {
+  // Users
+  const userSel = document.getElementById('adm-filter-user');
+  const prevUser = userSel.value;
+  userSel.innerHTML = '<option value="all">Όλοι οι χρήστες</option>';
+  const names = [...new Set(adminData.map(r => r.name))].sort();
+  names.forEach(n => {
+    const o = document.createElement('option');
+    o.value = n; o.textContent = n;
+    userSel.appendChild(o);
+  });
+  userSel.value = prevUser;
+
+  // Sections
+  const secSel = document.getElementById('adm-filter-section');
+  const prevSec = secSel.value;
+  secSel.innerHTML = '<option value="all">Όλες οι ενότητες</option>';
+  const secs = [...new Set(adminData.flatMap(r => (r.sections||'').split(',').map(s=>s.trim())))].filter(Boolean).sort();
+  secs.forEach(s => {
+    const o = document.createElement('option');
+    o.value = s; o.textContent = s;
+    secSel.appendChild(o);
+  });
+  secSel.value = prevSec;
+}
+
+function renderAdminSummary() {
+  const d = adminData;
+  document.getElementById('adm-total-tests').textContent = d.length || '—';
+  document.getElementById('adm-total-users').textContent = d.length ? new Set(d.map(r=>r.pin)).size : '—';
+  const avg = d.length ? Math.round(d.reduce((a,r)=>a+(r.pct||0),0)/d.length) : null;
+  document.getElementById('adm-avg-score').textContent = avg !== null ? avg + '%' : '—';
+  const passes = d.filter(r => (r.pct||0) >= 60).length;
+  document.getElementById('adm-pass-rate').textContent = d.length ? Math.round(passes/d.length*100) + '%' : '—';
+}
+
+function renderAdminTable() {
+  const filterUser    = document.getElementById('adm-filter-user').value;
+  const filterSection = document.getElementById('adm-filter-section').value;
+  const filterResult  = document.getElementById('adm-filter-result').value;
+
+  let rows = adminData;
+  if (filterUser !== 'all')    rows = rows.filter(r => r.name === filterUser);
+  if (filterSection !== 'all') rows = rows.filter(r => (r.sections||'').includes(filterSection));
+  if (filterResult === 'pass') rows = rows.filter(r => (r.pct||0) >= 60);
+  if (filterResult === 'fail') rows = rows.filter(r => (r.pct||0) < 60);
+
+  // Chart — εμφανίζεται μόνο αν φιλτράρουμε ανά χρήστη
+  if (filterUser !== 'all' && rows.length > 0) {
+    renderUserChart(filterUser, rows.slice().reverse()); // χρονολογική σειρά
+  } else {
+    document.getElementById('user-chart-section').style.display = 'none';
+  }
+
+  const tbody = document.getElementById('admin-tbody');
+  const empty = document.getElementById('admin-empty');
+  tbody.innerHTML = '';
+
+  if (rows.length === 0) {
+    empty.style.display = 'block'; return;
+  }
+  empty.style.display = 'none';
+
+  rows.forEach(r => {
+    const pct  = r.pct || 0;
+    const pass = pct >= 60;
+    const date = r.ts ? new Date(r.ts).toLocaleString('el-GR', {
+      day:'2-digit', month:'2-digit', year:'numeric',
+      hour:'2-digit', minute:'2-digit'
+    }) : '—';
+
+    const barClass = pct >= 75 ? 'good' : pct >= 60 ? '' : 'bad';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="white-space:nowrap;font-size:0.82rem">${date}</td>
+      <td><strong>${r.name||'—'}</strong></td>
+      <td style="font-size:0.82rem;color:var(--text-muted)">${r.sections||'—'}</td>
+      <td>
+        <div class="td-pct-bar">
+          <span style="font-weight:700;min-width:36px">${pct}%</span>
+          <div class="mini-bar-wrap">
+            <div class="mini-bar-fill ${barClass}" style="width:${pct}%"></div>
+          </div>
+        </div>
+      </td>
+      <td>${r.correct||0}/${r.total||0}</td>
+      <td style="font-size:0.82rem">${r.elapsed ? formatTime(r.elapsed) : '—'}</td>
+      <td class="${pass?'td-pass':'td-fail'}">${pass?'✓ Επιτυχία':'✗ Αποτυχία'}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function renderUserChart(userName, rows) {
+  const section = document.getElementById('user-chart-section');
+  document.getElementById('chart-title').textContent = 'Πρόοδος: ' + userName + ' (τελευταία ' + Math.min(rows.length,20) + ' τεστ)';
+  section.style.display = 'block';
+
+  const recent = rows.slice(-20);
+  const bars   = document.getElementById('chart-bars');
+  bars.innerHTML = '';
+  const maxPct = 100;
+  const barH   = 80; // px
+
+  recent.forEach((r, i) => {
+    const pct    = r.pct || 0;
+    const h      = Math.round((pct / maxPct) * barH);
+    const color  = pct >= 75 ? 'var(--asep-green)' : pct >= 60 ? 'var(--asep-cyan)' : 'var(--asep-red)';
+    const date   = r.ts ? new Date(r.ts).toLocaleDateString('el-GR',{day:'2-digit',month:'2-digit'}) : (i+1);
+    const wrap   = document.createElement('div');
+    wrap.className = 'chart-bar-wrap';
+    wrap.innerHTML = `
+      <div class="chart-bar-val">${pct}%</div>
+      <div class="chart-bar" style="height:${h}px;background:${color}" title="${pct}% — ${date}"></div>
+      <div class="chart-bar-lbl">${date}</div>
+    `;
+    bars.appendChild(wrap);
+  });
 }
 
 // ============================================================
@@ -749,8 +1419,7 @@ function endQuiz() {
 // ============================================================
 function startTimer(seconds) {
   const box = document.getElementById('timer-box');
-  box.style.display = 'block';
-  box.classList.remove('warning');
+  box.style.display = 'block'; box.classList.remove('warning');
   let remaining = seconds;
   box.textContent = formatTime(remaining);
   timerInterval = setInterval(() => {
@@ -762,7 +1431,7 @@ function startTimer(seconds) {
 }
 
 function formatTime(s) {
-  const m = Math.floor(s/60).toString().padStart(2,'0');
+  const m  = Math.floor(s/60).toString().padStart(2,'0');
   const ss = (s%60).toString().padStart(2,'0');
   return m + ':' + ss;
 }
