@@ -856,7 +856,7 @@ const INDEX_URL = REPO_BASE + 'index.json';
 
 // Google Apps Script endpoint — βάλτε το URL από το deploy του Apps Script
 // Οδηγίες: https://github.com/Venos-tests/ASEP-Erotiseis-gnoseon#apps-script
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyR4HTBpnv1_cwjbj2BANa-w6FJhpyDJQ99fWjd8uUh7VfuzmwiO4_1Pn1fy7XojzMn/exec';
+const APPS_SCRIPT_URL = 'ΒΑΛΤΕ_ΤΟ_APPS_SCRIPT_URL_ΕΔΩ';
 
 // PIN χρηστών: { "PIN": "Όνομα" }
 // ΣΗΜΑΝΤΙΚΟ: Αλλάξτε τα PINs πριν δημοσιεύσετε!
@@ -869,7 +869,7 @@ const USERS = {
 };
 
 // Master PIN για admin panel
-const ADMIN_PIN = "3462"; // ΑΛΛΑΞΤΕ ΤΟ!
+const ADMIN_PIN = "0000"; // ΑΛΛΑΞΤΕ ΤΟ!
 
 // ============================================================
 // STATE
@@ -893,7 +893,17 @@ const safeStorage = {
   set(k,v) { try { localStorage.setItem(k, v); }            catch(e) { this._mem[k]=v; } }
 };
 
-let progress = JSON.parse(safeStorage.get('asep_progress') || '{}');
+let progress = {}; // φορτώνεται ανά χρήστη μετά το PIN
+
+function progressKey(pin) {
+  return pin ? 'asep_progress_' + pin : 'asep_progress_guest';
+}
+function loadProgress(pin) {
+  progress = JSON.parse(safeStorage.get(progressKey(pin)) || '{}');
+}
+function saveProgress(pin) {
+  safeStorage.set(progressKey(pin), JSON.stringify(progress));
+}
 
 // ============================================================
 // INIT
@@ -999,6 +1009,7 @@ function handleStartClick() {
     openPinModal();
   } else {
     currentUser = null;
+    loadProgress(null);
     startQuiz();
   }
 }
@@ -1065,6 +1076,8 @@ function submitPin() {
     return;
   }
   currentUser = { pin, name };
+  loadProgress(pin);
+  updateStats();
   closePinModal();
   startQuiz();
 }
@@ -1176,7 +1189,7 @@ function answer(btn, key, q) {
   p.seen++; p.lastSeen = Date.now();
   if (correct) { score.correct++; p.correct++; p.interval = Math.min((p.interval||1)*2, 30); }
   else         { score.wrong++;   p.interval = 1; }
-  safeStorage.set('asep_progress', JSON.stringify(progress));
+  saveProgress(currentUser ? currentUser.pin : null);
 }
 
 function nextQuestion() {
