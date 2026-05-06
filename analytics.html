@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ΑΣΕΠ 2026 — Αναλυτικά Στατιστικά</title>
+<link href="https://fonts.googleapis.com/css2?family=GFS+Didot&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root {
+  --asep-blue: #003876;
+  --asep-cyan: #0072BC;
+  --asep-light: #E8F0F9;
+  --asep-accent: #F5A800;
+  --asep-green: #2E7D32;
+  --asep-red: #C62828;
+  --asep-gray: #F4F6F9;
+  --asep-border: #CBD5E1;
+  --text-main: #1A2B45;
+  --text-muted: #5A6A7E;
+  --radius: 6px;
+  --shadow: 0 2px 12px rgba(0,56,118,0.10);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Source Sans 3', sans-serif; background: var(--asep-gray); color: var(--text-main); min-height: 100vh; }
+
+header {
+  background: var(--asep-blue); color: #fff;
+  padding: 0 24px; display: flex; align-items: center; gap: 16px; height: 64px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+}
+header .logo { font-family: 'GFS Didot', serif; font-size: 1.5rem; letter-spacing: 2px; color: #fff; text-decoration: none; }
+header .logo span { color: var(--asep-accent); }
+header .subtitle { font-size: 0.82rem; color: rgba(255,255,255,0.70); border-left: 1px solid rgba(255,255,255,0.25); padding-left: 16px; line-height: 1.3; }
+header .badge { margin-left: auto; background: var(--asep-accent); color: var(--asep-blue); font-size: 0.72rem; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+header .back-btn { background: transparent; border: 1px solid rgba(255,255,255,0.3); color: rgba(255,255,255,0.8); font-size: 0.78rem; padding: 5px 12px; border-radius: 20px; cursor: pointer; transition: all 0.15s; }
+header .back-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+
+main { max-width: 980px; margin: 0 auto; padding: 28px 16px 56px; }
+
+/* PIN LOGIN */
+.login-card {
+  background: #fff; border: 1px solid var(--asep-border); border-radius: 10px;
+  padding: 48px 40px; max-width: 400px; margin: 60px auto; text-align: center;
+  box-shadow: var(--shadow);
+}
+.login-icon { font-size: 2.8rem; margin-bottom: 12px; }
+.login-title { font-family: 'GFS Didot', serif; font-size: 1.4rem; color: var(--asep-blue); margin-bottom: 6px; }
+.login-sub { font-size: 0.88rem; color: var(--text-muted); margin-bottom: 28px; line-height: 1.5; }
+.pin-wrap { display: flex; justify-content: center; gap: 10px; margin-bottom: 16px; }
+.pin-d { width: 52px; height: 60px; border: 2px solid var(--asep-border); border-radius: var(--radius); font-size: 1.6rem; font-weight: 700; text-align: center; color: var(--asep-blue); background: var(--asep-gray); transition: border-color 0.15s; }
+.pin-d:focus { outline: none; border-color: var(--asep-cyan); background: #fff; }
+.pin-d.shake { animation: shake 0.35s ease; border-color: var(--asep-red) !important; background: #FFEBEE; }
+@keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)} 40%{transform:translateX(6px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(4px)} }
+.pin-error { font-size: 0.85rem; color: var(--asep-red); min-height: 20px; margin-bottom: 12px; }
+.btn-login { width: 100%; background: var(--asep-blue); color: #fff; border: none; border-radius: var(--radius); padding: 13px; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: background 0.15s; }
+.btn-login:hover { background: var(--asep-cyan); }
+
+/* ANALYTICS LAYOUT */
+.analytics-header { margin-bottom: 24px; }
+.analytics-title { font-family: 'GFS Didot', serif; font-size: 1.5rem; color: var(--asep-blue); margin-bottom: 4px; }
+.analytics-sub { font-size: 0.9rem; color: var(--text-muted); }
+.user-pill { display: inline-flex; align-items: center; gap: 8px; background: var(--asep-light); border: 1px solid #B3CCE8; border-radius: 20px; padding: 5px 14px; font-size: 0.82rem; color: var(--asep-blue); font-weight: 600; margin-top: 8px; }
+
+/* FILTERS BAR */
+.filters-bar {
+  background: #fff; border: 1px solid var(--asep-border); border-radius: var(--radius);
+  padding: 14px 20px; margin-bottom: 20px;
+  display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+}
+.filter-group { display: flex; flex-direction: column; gap: 4px; }
+.filter-label { font-size: 0.72rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+.filter-group select {
+  border: 1.5px solid var(--asep-border); border-radius: var(--radius);
+  padding: 7px 12px; font-size: 0.88rem; color: var(--text-main); background: #fff; cursor: pointer;
+  font-family: 'Source Sans 3', sans-serif;
+}
+.filter-group select:focus { outline: none; border-color: var(--asep-cyan); }
+.btn-refresh { margin-left: auto; background: var(--asep-blue); color: #fff; border: none; border-radius: var(--radius); padding: 9px 18px; font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: background 0.15s; }
+.btn-refresh:hover { background: var(--asep-cyan); }
+.loading-indicator { font-size: 0.82rem; color: var(--asep-cyan); display: none; align-items: center; gap: 6px; }
+.spinner-sm { width: 14px; height: 14px; border: 2px solid var(--asep-border); border-top-color: var(--asep-cyan); border-radius: 50%; animation: spin 0.7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* KPI CARDS */
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; margin-bottom: 22px; }
+.kpi-card { background: #fff; border: 1px solid var(--asep-border); border-radius: var(--radius); padding: 18px 20px; text-align: center; position: relative; overflow: hidden; }
+.kpi-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+.kpi-card.blue::before { background: var(--asep-blue); }
+.kpi-card.cyan::before { background: var(--asep-cyan); }
+.kpi-card.green::before { background: var(--asep-green); }
+.kpi-card.amber::before { background: var(--asep-accent); }
+.kpi-card.red::before { background: var(--asep-red); }
+.kpi-val { font-family: 'GFS Didot', serif; font-size: 2.2rem; color: var(--asep-blue); line-height: 1.1; }
+.kpi-val.green { color: var(--asep-green); }
+.kpi-val.red { color: var(--asep-red); }
+.kpi-val.amber { color: #B07A00; }
+.kpi-lbl { font-size: 0.78rem; color: var(--text-muted); margin-top: 4px; line-height: 1.3; }
+.kpi-sub { font-size: 0.72rem; color: var(--asep-cyan); margin-top: 2px; font-weight: 600; }
+
+/* CHARTS GRID */
+.charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+@media(max-width: 680px) { .charts-grid { grid-template-columns: 1fr; } }
+.chart-panel { background: #fff; border: 1px solid var(--asep-border); border-radius: var(--radius); padding: 20px; }
+.chart-panel.full { grid-column: 1 / -1; }
+.chart-title { font-size: 0.88rem; font-weight: 700; color: var(--asep-blue); margin-bottom: 4px; }
+.chart-desc { font-size: 0.76rem; color: var(--text-muted); margin-bottom: 16px; }
+.chart-wrap { position: relative; width: 100%; height: 220px; }
+.chart-wrap.tall { height: 280px; }
+
+/* SECTION BREAKDOWN */
+.section-bars { margin-top: 4px; }
+.sec-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.sec-name { font-size: 0.8rem; color: var(--text-main); min-width: 130px; flex-shrink: 0; }
+.sec-bar-wrap { flex: 1; height: 8px; background: var(--asep-gray); border-radius: 4px; overflow: hidden; }
+.sec-bar-fill { height: 100%; border-radius: 4px; background: var(--asep-cyan); transition: width 0.4s ease; }
+.sec-bar-fill.good { background: var(--asep-green); }
+.sec-bar-fill.mid { background: var(--asep-accent); }
+.sec-bar-fill.bad { background: var(--asep-red); }
+.sec-pct { font-size: 0.78rem; font-weight: 700; color: var(--text-muted); min-width: 36px; text-align: right; }
+
+/* ATTEMPTS TABLE */
+.attempts-table-wrap { background: #fff; border: 1px solid var(--asep-border); border-radius: var(--radius); overflow-x: auto; margin-bottom: 16px; }
+.attempts-table-wrap h3 { font-size: 0.88rem; font-weight: 700; color: var(--asep-blue); padding: 16px 18px 0; }
+.attempts-table-wrap .sub { font-size: 0.76rem; color: var(--text-muted); padding: 2px 18px 12px; }
+table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+thead { background: var(--asep-blue); color: #fff; }
+thead th { padding: 10px 14px; text-align: left; font-weight: 600; font-size: 0.78rem; letter-spacing: 0.3px; }
+tbody tr { border-bottom: 1px solid var(--asep-border); }
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: var(--asep-light); }
+tbody td { padding: 9px 14px; }
+.td-pass { color: var(--asep-green); font-weight: 700; }
+.td-fail { color: var(--asep-red); font-weight: 700; }
+.score-pill { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 0.78rem; font-weight: 700; }
+.score-pill.high { background: #E8F5E9; color: var(--asep-green); }
+.score-pill.mid { background: #FFF8E1; color: #7A5200; }
+.score-pill.low { background: #FFEBEE; color: var(--asep-red); }
+.best-badge { font-size: 0.65rem; font-weight: 700; background: var(--asep-accent); color: var(--asep-blue); padding: 1px 6px; border-radius: 10px; margin-left: 4px; }
+
+/* EMPTY / ERROR */
+.empty-state { text-align: center; padding: 48px 20px; color: var(--text-muted); font-size: 0.92rem; }
+.error-box { background: #FFEBEE; color: var(--asep-red); border: 1px solid #EF9A9A; border-radius: var(--radius); padding: 14px 18px; margin: 12px 0; font-size: 0.9rem; }
+.info-note { background: var(--asep-light); border: 1px solid #B3CCE8; border-radius: var(--radius); padding: 10px 14px; font-size: 0.83rem; color: var(--asep-blue); margin-bottom: 16px; }
+
+/* SCREENS */
+.screen { display: none; }
+.screen.active { display: block; }
+
+footer { text-align: center; font-size: 0.76rem; color: var(--text-muted); padding: 20px; border-top: 1px solid var(--asep-border); margin-top: 20px; }
+
+/* Legend */
+.legend { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; font-size: 0.76rem; color: var(--text-muted); }
+.legend span { display: flex; align-items: center; gap: 5px; }
+.legend-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+</style>
+</head>
+<body>
+
+<header>
+  <a class="logo" href="#"><span>ΑΣΕΠ</span> 2026</a>
+  <div class="subtitle">Αναλυτικά Στατιστικά<br>Παρακολούθηση Επίδοσης</div>
+  <div class="badge">ANALYTICS</div>
+  <button class="back-btn" onclick="window.location.href='index.html'">← Πίσω στο Portal</button>
+</header>
+
+<main>
+
+  <!-- LOGIN SCREEN -->
+  <div id="screen-login" class="screen active">
+    <div class="login-card">
+      <div class="login-icon">📊</div>
+      <div class="login-title">Τα Στατιστικά μου</div>
+      <div class="login-sub">Εισάγετε το προσωπικό σας 4ψήφιο PIN για να δείτε την πρόοδό σας.</div>
+      <div class="pin-wrap" id="pin-wrap">
+        <input class="pin-d" maxlength="1" type="password" inputmode="numeric" id="p0" autocomplete="off">
+        <input class="pin-d" maxlength="1" type="password" inputmode="numeric" id="p1" autocomplete="off">
+        <input class="pin-d" maxlength="1" type="password" inputmode="numeric" id="p2" autocomplete="off">
+        <input class="pin-d" maxlength="1" type="password" inputmode="numeric" id="p3" autocomplete="off">
+      </div>
+      <div class="pin-error" id="pin-error"></div>
+      <button class="btn-login" onclick="submitPin()">Προβολή Στατιστικών →</button>
+    </div>
+  </div>
+
+  <!-- ANALYTICS SCREEN -->
+  <div id="screen-analytics" class="screen">
+
+    <div class="analytics-header">
+      <div class="analytics-title">Αναλυτικά Στατιστικά</div>
+      <div class="analytics-sub">Ανάλυση επίδοσης ανά τεστ, ενότητα και χρόνο</div>
+      <div class="user-pill">👤 <span id="user-name-display">—</span></div>
+    </div>
+
+    <div class="info-note" id="sheet-note" style="display:none">
+      ⚠️ Τα δεδομένα φορτώνονται από το Google Sheets. Αν δεν εμφανίζονται, βεβαιωθείτε ότι το Apps Script endpoint έχει ρυθμιστεί σωστά.
+    </div>
+
+    <!-- FILTERS -->
+    <div class="filters-bar">
+      <div class="filter-group">
+        <div class="filter-label">Τύπος Εξέτασης</div>
+        <select id="filter-mode" onchange="applyFilters()">
+          <option value="all">Όλοι οι τύποι</option>
+          <option value="official">Επίσημο Τεστ (25 ερ.)</option>
+          <option value="drill_20">Mini Drill 20</option>
+          <option value="drill_10">Quick Drill 10</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <div class="filter-label">Ενότητα</div>
+        <select id="filter-section" onchange="applyFilters()">
+          <option value="all">Όλες οι ενότητες</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <div class="filter-label">Χρονικό Διάστημα</div>
+        <select id="filter-period" onchange="applyFilters()">
+          <option value="all">Όλο το ιστορικό</option>
+          <option value="7">Τελευταίες 7 ημέρες</option>
+          <option value="30">Τελευταίες 30 ημέρες</option>
+          <option value="90">Τελευταίοι 3 μήνες</option>
+        </select>
+      </div>
+      <div class="loading-indicator" id="loading-ind">
+        <div class="spinner-sm"></div> Φόρτωση...
+      </div>
+      <button class="btn-refresh" onclick="loadFromSheet()">↻ Ανανέωση</button>
+    </div>
+
+    <!-- KPI CARDS -->
+    <div class="kpi-grid">
+      <div class="kpi-card blue">
+        <div class="kpi-val" id="kpi-attempts">—</div>
+        <div class="kpi-lbl">Σύνολο Attempts</div>
+        <div class="kpi-sub" id="kpi-attempts-sub"></div>
+      </div>
+      <div class="kpi-card cyan">
+        <div class="kpi-val" id="kpi-avg">—</div>
+        <div class="kpi-lbl">Μέσος Όρος Βαθμολογίας</div>
+        <div class="kpi-sub" id="kpi-avg-sub"></div>
+      </div>
+      <div class="kpi-card green">
+        <div class="kpi-val green" id="kpi-best">—</div>
+        <div class="kpi-lbl">Καλύτερη Βαθμολογία</div>
+        <div class="kpi-sub" id="kpi-best-sub"></div>
+      </div>
+      <div class="kpi-card amber">
+        <div class="kpi-val amber" id="kpi-pass">—</div>
+        <div class="kpi-lbl">Ποσοστό Επιτυχίας</div>
+        <div class="kpi-sub" id="kpi-pass-sub"></div>
+      </div>
+      <div class="kpi-card red">
+        <div class="kpi-val" id="kpi-streak">—</div>
+        <div class="kpi-lbl">Τελευταία Επίδοση</div>
+        <div class="kpi-sub" id="kpi-streak-sub"></div>
+      </div>
+    </div>
+
+    <!-- CHARTS ROW 1 -->
+    <div class="charts-grid">
+      <div class="chart-panel full">
+        <div class="chart-title">Τάση Βαθμολογίας ανά Attempt</div>
+        <div class="chart-desc">Εξέλιξη επίδοσης με την πάροδο του χρόνου · γραμμή στόχου 70%</div>
+        <div class="legend">
+          <span><span class="legend-dot" style="background:#003876"></span>Βαθμολογία</span>
+          <span><span class="legend-dot" style="background:#E8A000;"></span>Στόχος 70%</span>
+        </div>
+        <div class="chart-wrap tall">
+          <canvas id="chart-trend" role="img" aria-label="Γραμμή τάσης βαθμολογίας ανά attempt">Δεν υπάρχουν δεδομένα.</canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="charts-grid">
+      <div class="chart-panel">
+        <div class="chart-title">Κατανομή Βαθμολογιών</div>
+        <div class="chart-desc">Πλήθος attempts ανά εύρος βαθμού</div>
+        <div class="chart-wrap">
+          <canvas id="chart-dist" role="img" aria-label="Ιστόγραμμα κατανομής βαθμολογιών">Δεν υπάρχουν δεδομένα.</canvas>
+        </div>
+      </div>
+      <div class="chart-panel">
+        <div class="chart-title">Επιτυχία ανά Τύπο Τεστ</div>
+        <div class="chart-desc">Ποσοστό επιτυχίας ανά mode</div>
+        <div class="chart-wrap">
+          <canvas id="chart-modes" role="img" aria-label="Γράφημα ποσοστού επιτυχίας ανά τύπο τεστ">Δεν υπάρχουν δεδομένα.</canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION BREAKDOWN -->
+    <div class="chart-panel" style="margin-bottom:16px">
+      <div class="chart-title">Επίδοση ανά Ενότητα</div>
+      <div class="chart-desc">Μέσος όρος βαθμολογίας ανά θεματική ενότητα</div>
+      <div class="section-bars" id="section-bars">
+        <div class="empty-state">Φόρτωση δεδομένων...</div>
+      </div>
+    </div>
+
+    <!-- ATTEMPTS TABLE -->
+    <div class="attempts-table-wrap">
+      <h3>Ιστορικό Attempts</h3>
+      <div class="sub">Αναλυτική λίστα όλων των τεστ · ⭐ = καλύτερη επίδοση</div>
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Ημερομηνία</th>
+            <th>Τύπος</th>
+            <th>Ενότητα</th>
+            <th>Σκορ</th>
+            <th>Βαθμός</th>
+            <th>Χρόνος</th>
+            <th>Αποτέλεσμα</th>
+          </tr>
+        </thead>
+        <tbody id="attempts-tbody">
+          <tr><td colspan="8" class="empty-state">Φόρτωση...</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div id="error-box" class="error-box" style="display:none"></div>
+
+  </div><!-- /analytics screen -->
+
+</main>
+
+<footer>
+  ΑΣΕΠ Analytics · Δεδομένα από Google Sheets · <a href="index.html" style="color:var(--asep-cyan)">Επιστροφή στο Portal</a>
+</footer>
+
+<script>
+// ============================================================
+//  ΡΥΘΜΙΣΕΙΣ — προσαρμόστε αυτά
+// ============================================================
+
+// Το Apps Script URL (ίδιο με το index.html σας)
+const APPS_SCRIPT_URL = 'ΒΑΛΤΕ_ΤΟ_APPS_SCRIPT_URL_ΕΔΩ';
+
+// PINs χρηστών — ίδιο dictionary με index.html
+const USERS = {
+  "1001": "Χρήστης Α",
+  "1002": "Χρήστης Β",
+  "1003": "Χρήστης Γ",
+  "1004": "Χρήστης Δ",
+  // Προσθέστε τους δικούς σας...
+};
+
+// Κατώφλι επιτυχίας (%)
+const PASS_THRESHOLD = 70;
+
+// ============================================================
+//  STATE
+// ============================================================
+let currentUser = null;
+let allRecords = [];    // Όλα τα records από Sheet για αυτόν τον χρήστη
+let filtered = [];      // Μετά τα φίλτρα
+
+let trendChart = null, distChart = null, modesChart = null;
+
+// ============================================================
+//  PIN LOGIC
+// ============================================================
+function setupPinInputs() {
+  for (let i = 0; i < 4; i++) {
+    const inp = document.getElementById('p' + i);
+    inp.addEventListener('input', e => {
+      const v = e.target.value.replace(/\D/g, '');
+      e.target.value = v ? v[v.length-1] : '';
+      if (v && i < 3) document.getElementById('p' + (i+1)).focus();
+    });
+    inp.addEventListener('keydown', e => {
+      if (e.key === 'Backspace' && !inp.value && i > 0) document.getElementById('p' + (i-1)).focus();
+      if (e.key === 'Enter') submitPin();
+    });
+  }
+  document.getElementById('p0').focus();
+}
+
+function submitPin() {
+  const pin = [0,1,2,3].map(i => document.getElementById('p' + i).value).join('');
+  if (pin.length < 4) { showPinError('Συμπληρώστε και τα 4 ψηφία.'); return; }
+  if (!USERS[pin]) { shakePin(); showPinError('Μη έγκυρο PIN. Δοκιμάστε ξανά.'); return; }
+  currentUser = { pin, name: USERS[pin] };
+  document.getElementById('user-name-display').textContent = currentUser.name + ' (PIN: ' + pin + ')';
+  showScreen('screen-analytics');
+  loadFromSheet();
+}
+
+function showPinError(msg) { document.getElementById('pin-error').textContent = msg; }
+
+function shakePin() {
+  [0,1,2,3].forEach(i => {
+    const d = document.getElementById('p' + i);
+    d.classList.add('shake');
+    d.value = '';
+    setTimeout(() => d.classList.remove('shake'), 400);
+  });
+  document.getElementById('p0').focus();
+}
+
+// ============================================================
+//  DATA LOADING FROM GOOGLE SHEETS
+// ============================================================
+async function loadFromSheet() {
+  if (!currentUser) return;
+  setLoading(true);
+  hideError();
+
+  if (APPS_SCRIPT_URL === 'ΒΑΛΤΕ_ΤΟ_APPS_SCRIPT_URL_ΕΔΩ') {
+    // Demo mode με δεδομένα-δείγμα
+    allRecords = generateDemoData(currentUser.pin);
+    document.getElementById('sheet-note').style.display = 'block';
+    finishLoad();
+    return;
+  }
+
+  try {
+    const url = APPS_SCRIPT_URL + '?action=getUserData&pin=' + encodeURIComponent(currentUser.pin);
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    allRecords = parseSheetRows(data.rows || []);
+    finishLoad();
+  } catch(e) {
+    showError('Σφάλμα φόρτωσης από Google Sheets: ' + e.message + '. Εμφανίζονται δείγμα δεδομένων.');
+    allRecords = generateDemoData(currentUser.pin);
+    finishLoad();
+  }
+}
+
+function parseSheetRows(rows) {
+  // Αναμενόμενη δομή Sheet στήλες:
+  // timestamp | pin | userName | mode | section | score | total | pct | time | result
+  return rows.map((r, idx) => ({
+    id: idx + 1,
+    date: r[0] || '',
+    pin: r[1] || '',
+    name: r[2] || '',
+    mode: r[3] || 'official',
+    section: r[4] || 'Όλες',
+    score: parseInt(r[5]) || 0,
+    total: parseInt(r[6]) || 25,
+    pct: parseFloat(r[7]) || 0,
+    time: r[8] || '—',
+    result: r[9] || (parseFloat(r[7]) >= PASS_THRESHOLD ? 'pass' : 'fail'),
+  })).filter(r => r.pin === currentUser.pin);
+}
+
+function finishLoad() {
+  buildSectionFilter();
+  applyFilters();
+  setLoading(false);
+}
+
+function setLoading(v) {
+  document.getElementById('loading-ind').style.display = v ? 'flex' : 'none';
+}
+
+function showError(msg) {
+  const el = document.getElementById('error-box');
+  el.textContent = msg; el.style.display = 'block';
+}
+function hideError() { document.getElementById('error-box').style.display = 'none'; }
+
+// ============================================================
+//  DEMO DATA GENERATOR (χρησιμοποιείται αν δεν υπάρχει Apps Script)
+// ============================================================
+function generateDemoData(pin) {
+  const sections = ['Ιστορία & Πολιτισμός', 'Δίκαιο & Πολίτης', 'Επιστήμη & Τεχνολογία', 'Γεωγραφία', 'Οικονομία'];
+  const modes = ['official', 'official', 'drill_20', 'official', 'drill_10', 'drill_20'];
+  const records = [];
+  let baseScore = 45 + (parseInt(pin) % 15);
+  for (let i = 0; i < 18; i++) {
+    const daysAgo = (17 - i) * 4;
+    const d = new Date(); d.setDate(d.getDate() - daysAgo);
+    const mode = modes[i % modes.length];
+    const total = mode === 'official' ? 25 : mode === 'drill_20' ? 20 : 10;
+    const improvement = Math.min(i * 1.5, 30);
+    const rawPct = Math.min(95, baseScore + improvement + (Math.random() - 0.4) * 18);
+    const pct = Math.round(rawPct);
+    const score = Math.round((pct / 100) * total);
+    records.push({
+      id: i + 1,
+      date: d.toLocaleDateString('el-GR'),
+      pin, name: USERS[pin] || 'Χρήστης',
+      mode,
+      section: sections[i % sections.length],
+      score, total, pct,
+      time: Math.floor(Math.random() * 15 + 8) + ':' + String(Math.floor(Math.random()*60)).padStart(2,'0'),
+      result: pct >= PASS_THRESHOLD ? 'pass' : 'fail',
+    });
+  }
+  return records;
+}
+
+// ============================================================
+//  FILTERS & RENDERING
+// ============================================================
+function buildSectionFilter() {
+  const sel = document.getElementById('filter-section');
+  const sections = [...new Set(allRecords.map(r => r.section))].sort();
+  sel.innerHTML = '<option value="all">Όλες οι ενότητες</option>';
+  sections.forEach(s => {
+    const o = document.createElement('option');
+    o.value = s; o.textContent = s;
+    sel.appendChild(o);
+  });
+}
+
+function applyFilters() {
+  const mode = document.getElementById('filter-mode').value;
+  const section = document.getElementById('filter-section').value;
+  const period = document.getElementById('filter-period').value;
+  const cutoff = period !== 'all' ? Date.now() - parseInt(period) * 86400000 : 0;
+
+  filtered = allRecords.filter(r => {
+    if (mode !== 'all' && r.mode !== mode) return false;
+    if (section !== 'all' && r.section !== section) return false;
+    if (cutoff > 0) {
+      const parts = r.date.split('/');
+      const rDate = parts.length === 3 ? new Date(parts[2], parts[1]-1, parts[0]).getTime() : 0;
+      if (rDate < cutoff) return false;
+    }
+    return true;
+  });
+
+  renderKPIs();
+  renderTrendChart();
+  renderDistChart();
+  renderModesChart();
+  renderSectionBars();
+  renderAttemptsTable();
+}
+
+// ============================================================
+//  KPI CARDS
+// ============================================================
+function renderKPIs() {
+  const n = filtered.length;
+  document.getElementById('kpi-attempts').textContent = n;
+  document.getElementById('kpi-attempts-sub').textContent = n === 1 ? '1 attempt' : n + ' attempts συνολικά';
+
+  if (n === 0) {
+    ['kpi-avg','kpi-best','kpi-pass','kpi-streak'].forEach(id => {
+      document.getElementById(id).textContent = '—';
+    });
+    return;
+  }
+
+  const avg = Math.round(filtered.reduce((a,r) => a + r.pct, 0) / n);
+  const best = Math.max(...filtered.map(r => r.pct));
+  const passes = filtered.filter(r => r.result === 'pass').length;
+  const passRate = Math.round((passes / n) * 100);
+  const last = filtered[filtered.length - 1];
+
+  document.getElementById('kpi-avg').textContent = avg + '%';
+  const avgEl = document.getElementById('kpi-avg');
+  avgEl.className = 'kpi-val' + (avg >= PASS_THRESHOLD ? '' : ' red');
+  document.getElementById('kpi-avg-sub').textContent = avg >= PASS_THRESHOLD ? '✓ Πάνω από στόχο' : '↓ Κάτω από στόχο 70%';
+
+  document.getElementById('kpi-best').textContent = best + '%';
+  const bestRec = filtered.find(r => r.pct === best);
+  document.getElementById('kpi-best-sub').textContent = bestRec ? 'στις ' + bestRec.date : '';
+
+  document.getElementById('kpi-pass').textContent = passRate + '%';
+  document.getElementById('kpi-pass-sub').textContent = passes + ' επιτυχίες από ' + n;
+
+  document.getElementById('kpi-streak').textContent = last.pct + '%';
+  document.getElementById('kpi-streak').className = 'kpi-val' + (last.pct >= PASS_THRESHOLD ? ' green' : ' red');
+  document.getElementById('kpi-streak-sub').textContent = 'τελευταίο attempt · ' + last.date;
+}
+
+// ============================================================
+//  TREND CHART
+// ============================================================
+function renderTrendChart() {
+  if (trendChart) { trendChart.destroy(); trendChart = null; }
+  const ctx = document.getElementById('chart-trend').getContext('2d');
+
+  if (filtered.length === 0) return;
+
+  const labels = filtered.map((r, i) => '#' + (i+1) + ' · ' + r.date);
+  const data = filtered.map(r => r.pct);
+  const target = filtered.map(() => PASS_THRESHOLD);
+
+  trendChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Βαθμολογία',
+          data, fill: true,
+          backgroundColor: 'rgba(0,56,118,0.08)',
+          borderColor: '#003876', borderWidth: 2.5,
+          pointBackgroundColor: data.map(v => v >= PASS_THRESHOLD ? '#2E7D32' : '#C62828'),
+          pointRadius: 5, pointHoverRadius: 7,
+          tension: 0.35,
+        },
+        {
+          label: 'Στόχος 70%',
+          data: target,
+          borderColor: '#E8A000', borderWidth: 1.5,
+          borderDash: [6, 4], pointRadius: 0, fill: false,
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: {
+        callbacks: {
+          label: ctx => ' ' + ctx.dataset.label + ': ' + ctx.parsed.y + '%'
+        }
+      }},
+      scales: {
+        y: { min: 0, max: 100, ticks: { callback: v => v + '%' }, grid: { color: 'rgba(0,0,0,0.05)' } },
+        x: { ticks: { font: { size: 11 }, maxRotation: 40 }, grid: { display: false } }
+      }
+    }
+  });
+}
+
+// ============================================================
+//  DISTRIBUTION CHART
+// ============================================================
+function renderDistChart() {
+  if (distChart) { distChart.destroy(); distChart = null; }
+  const ctx = document.getElementById('chart-dist').getContext('2d');
+  if (filtered.length === 0) return;
+
+  const buckets = ['0–39', '40–59', '60–69', '70–79', '80–89', '90–100'];
+  const counts = [0,0,0,0,0,0];
+  const colors = ['#C62828','#E57373','#F5A800','#0072BC','#1565C0','#2E7D32'];
+
+  filtered.forEach(r => {
+    const p = r.pct;
+    if (p < 40) counts[0]++;
+    else if (p < 60) counts[1]++;
+    else if (p < 70) counts[2]++;
+    else if (p < 80) counts[3]++;
+    else if (p < 90) counts[4]++;
+    else counts[5]++;
+  });
+
+  distChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: buckets,
+      datasets: [{
+        label: 'Attempts',
+        data: counts,
+        backgroundColor: colors,
+        borderRadius: 4,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { ticks: { stepSize: 1 }, grid: { color: 'rgba(0,0,0,0.05)' } },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+}
+
+// ============================================================
+//  MODES CHART
+// ============================================================
+function renderModesChart() {
+  if (modesChart) { modesChart.destroy(); modesChart = null; }
+  const ctx = document.getElementById('chart-modes').getContext('2d');
+
+  const modeLabels = { official: 'Επίσημο', drill_20: 'Mini Drill 20', drill_10: 'Quick Drill 10' };
+  const modeKeys = ['official', 'drill_20', 'drill_10'];
+  const passRates = [], counts = [];
+
+  modeKeys.forEach(mk => {
+    const recs = filtered.filter(r => r.mode === mk);
+    const passes = recs.filter(r => r.result === 'pass').length;
+    passRates.push(recs.length ? Math.round((passes / recs.length) * 100) : 0);
+    counts.push(recs.length);
+  });
+
+  modesChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: modeKeys.map(k => modeLabels[k]),
+      datasets: [{
+        label: 'Ποσοστό Επιτυχίας %',
+        data: passRates,
+        backgroundColor: ['#003876', '#0072BC', '#5B9BD5'],
+        borderRadius: 4,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => ' ' + ctx.parsed.y + '%  (' + counts[ctx.dataIndex] + ' attempts)' } }
+      },
+      scales: {
+        y: { min: 0, max: 100, ticks: { callback: v => v + '%' }, grid: { color: 'rgba(0,0,0,0.05)' } },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+}
+
+// ============================================================
+//  SECTION BARS
+// ============================================================
+function renderSectionBars() {
+  const container = document.getElementById('section-bars');
+  const sections = [...new Set(filtered.map(r => r.section))];
+  if (sections.length === 0 || filtered.length === 0) {
+    container.innerHTML = '<div class="empty-state">Δεν υπάρχουν δεδομένα για τα επιλεγμένα φίλτρα.</div>';
+    return;
+  }
+
+  const secData = sections.map(s => {
+    const recs = filtered.filter(r => r.section === s);
+    const avg = Math.round(recs.reduce((a,r) => a + r.pct, 0) / recs.length);
+    return { s, avg, count: recs.length };
+  }).sort((a,b) => b.avg - a.avg);
+
+  container.innerHTML = secData.map(({s, avg, count}) => {
+    const cls = avg >= 80 ? 'good' : avg >= PASS_THRESHOLD ? '' : avg >= 50 ? 'mid' : 'bad';
+    return `<div class="sec-row">
+      <div class="sec-name">${s}<br><span style="font-size:0.7rem;color:var(--text-muted)">${count} attempts</span></div>
+      <div class="sec-bar-wrap"><div class="sec-bar-fill ${cls}" style="width:${avg}%"></div></div>
+      <div class="sec-pct">${avg}%</div>
+    </div>`;
+  }).join('');
+}
+
+// ============================================================
+//  ATTEMPTS TABLE
+// ============================================================
+function renderAttemptsTable() {
+  const tbody = document.getElementById('attempts-tbody');
+  if (filtered.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="8" class="empty-state">Δεν βρέθηκαν εγγραφές για τα επιλεγμένα φίλτρα.</td></tr>';
+    return;
+  }
+
+  const bestPct = Math.max(...filtered.map(r => r.pct));
+  const modeLabel = { official: 'Επίσημο', drill_20: 'Mini Drill 20', drill_10: 'Quick Drill 10' };
+
+  const rows = [...filtered].reverse().map((r, idx) => {
+    const pillCls = r.pct >= 80 ? 'high' : r.pct >= PASS_THRESHOLD ? 'mid' : 'low';
+    const isBest = r.pct === bestPct;
+    const resultCls = r.result === 'pass' ? 'td-pass' : 'td-fail';
+    const resultLabel = r.result === 'pass' ? '✓ Επιτυχία' : '✗ Αποτυχία';
+    return `<tr>
+      <td>${filtered.length - idx}</td>
+      <td>${r.date}</td>
+      <td>${modeLabel[r.mode] || r.mode}</td>
+      <td>${r.section}</td>
+      <td>${r.score}/${r.total}</td>
+      <td><span class="score-pill ${pillCls}">${r.pct}%</span>${isBest ? '<span class="best-badge">⭐ Best</span>' : ''}</td>
+      <td>${r.time}</td>
+      <td class="${resultCls}">${resultLabel}</td>
+    </tr>`;
+  }).join('');
+
+  tbody.innerHTML = rows;
+}
+
+// ============================================================
+//  SCREEN HELPER
+// ============================================================
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ============================================================
+//  INIT
+// ============================================================
+setupPinInputs();
+</script>
+</body>
+</html>
