@@ -638,6 +638,7 @@
   <a class="logo" href="#"><span>ΑΣΕΠ</span> 2026</a>
   <div class="subtitle">Τεστ Γενικών Γνώσεων<br>Προετοιμασία &amp; Εξάσκηση</div>
   <div class="badge">BETA</div>
+  <a id="header-analytics-link" href="analytics.html" class="admin-link" style="display:none;text-decoration:none">📊 Στατιστικά</a>
   <button class="admin-link" onclick="openAdminLogin()">⚙ Admin</button>
 </header>
 
@@ -736,6 +737,7 @@
       <div class="btn-row">
         <button class="btn-secondary" onclick="showScreen('screen-home')">← Αρχική</button>
         <button class="btn-start" style="width:auto;padding:10px 28px" onclick="handleStartClick()">Νέο Τεστ</button>
+        <a id="analytics-btn" href="analytics.html" class="btn-secondary" style="text-decoration:none;display:none">📊 Στατιστικά μου</a>
       </div>
       <div class="log-status" id="log-status"></div>
     </div>
@@ -856,7 +858,7 @@ const INDEX_URL = REPO_BASE + 'index.json';
 
 // Google Apps Script endpoint — βάλτε το URL από το deploy του Apps Script
 // Οδηγίες: https://github.com/Venos-tests/ASEP-Erotiseis-gnoseon#apps-script
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzH1vJpqAbD61_EDKa63d5zIg4oKLBj5ReKGsntZ7n7/dev';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzH1vJpqAbD61_EDKa63d5zIg4oKLBj5ReKGsntZ7n7/exec';
 
 // PIN χρηστών: { "PIN": "Όνομα" }
 // ΣΗΜΑΝΤΙΚΟ: Αλλάξτε τα PINs πριν δημοσιεύσετε!
@@ -1079,6 +1081,11 @@ function submitPin() {
   loadProgress(pin);
   updateStats();
   closePinModal();
+  // Εμφάνιση κουμπιών analytics (header + results screen)
+  const analyticsBtn = document.getElementById('analytics-btn');
+  const headerLink   = document.getElementById('header-analytics-link');
+  if (analyticsBtn) analyticsBtn.style.display = 'inline-flex';
+  if (headerLink)   headerLink.style.display   = 'inline-block';
   startQuiz();
 }
 
@@ -1230,43 +1237,52 @@ async function logScore(user, correct, total, pct, elapsedSec) {
   statusEl.className = 'log-status';
 
   // Ενότητες που εξετάστηκαν
-  const sections = [...new Set(sessionQ.map(q => q._label))].join(', ');
+  const section = activeSlugs.includes('all')
+    ? 'Όλες'
+    : [...new Set(sessionQ.map(q => q._label))].join(', ');
 
-  const payload = {
+  // Τοπικό αντίγραφο πάντα (fallback + ιστορικό offline)
+  const localEntry = {
     pin:      user.pin,
-    name:     user.name,
-    sections: sections || 'Όλες',
-    correct:  correct,
+    userName: user.name,
+    mode:     activeMode,
+    section:  section,
+    score:    correct,
     total:    total,
     pct:      pct,
-    elapsed:  elapsedSec,
+    timeSecs: elapsedSec,
     ts:       new Date().toISOString()
   };
+  const local = JSON.parse(safeStorage.get('asep_scores') || '[]');
+  local.push(localEntry);
+  safeStorage.set('asep_scores', JSON.stringify(local));
 
+  // Demo mode — δεν υπάρχει Apps Script URL
+  if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL === 'ΒΑΛΤΕ_ΤΟ_APPS_SCRIPT_URL_ΕΔΩ') {
+    statusEl.textContent = '✓ Αποθηκεύτηκε τοπικά (ορίστε APPS_SCRIPT_URL για καταγραφή στο Sheet)';
+    statusEl.className = 'log-status ok';
+    return;
+  }
+
+  // Αποστολή στο Google Sheet μέσω GET (Apps Script απαιτεί GET για no-cors)
   try {
-    if (APPS_SCRIPT_URL === 'ΒΑΛΤΕ_ΤΟ_APPS_SCRIPT_URL_ΕΔΩ') {
-      // Demo mode — αποθηκεύει τοπικά
-      const local = JSON.parse(safeStorage.get('asep_scores') || '[]');
-      local.push(payload);
-      safeStorage.set('asep_scores', JSON.stringify(local));
-      statusEl.textContent = '✓ Αποθηκεύτηκε τοπικά (demo — δεν έχει οριστεί Apps Script URL)';
-      statusEl.className = 'log-status ok';
-      return;
-    }
-    const res = await fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      mode:   'no-cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
+    const params = new URLSearchParams({
+      action:   'logResult',
+      pin:      user.pin,
+      userName: user.name,
+      mode:     activeMode,
+      section:  section,
+      score:    correct,
+      total:    total,
+      pct:      pct,
+      timeSecs: elapsedSec
     });
-    statusEl.textContent = '✓ Το αποτέλεσμα καταγράφηκε επιτυχώς!';
+    // Χρησιμοποιούμε no-cors — δεν διαβάζουμε την απόκριση αλλά το request φτάνει στο Sheet
+    await fetch(APPS_SCRIPT_URL + '?' + params.toString(), { method: 'GET', mode: 'no-cors' });
+    statusEl.textContent = '✓ Το αποτέλεσμα καταγράφηκε στο Google Sheet!';
     statusEl.className = 'log-status ok';
   } catch(e) {
-    // Fallback: αποθήκευση τοπικά αν αποτύχει το network
-    const local = JSON.parse(safeStorage.get('asep_scores') || '[]');
-    local.push(payload);
-    safeStorage.set('asep_scores', JSON.stringify(local));
-    statusEl.textContent = '⚠ Αποθηκεύτηκε τοπικά (χωρίς σύνδεση)';
+    statusEl.textContent = '⚠ Αποθηκεύτηκε τοπικά (αδυναμία σύνδεσης στο Sheet)';
     statusEl.className = 'log-status err';
   }
 }
@@ -1282,21 +1298,52 @@ async function openAdminPanel() {
 async function refreshAdminData() {
   adminData = [];
 
-  // 1. Φόρτωση από Google Sheet (μέσω Apps Script GET)
-  if (APPS_SCRIPT_URL !== 'ΒΑΛΤΕ_ΤΟ_APPS_SCRIPT_URL_ΕΔΩ') {
+  // 1. Φόρτωση από Google Sheet μέσω Apps Script
+  if (APPS_SCRIPT_URL && APPS_SCRIPT_URL !== 'ΒΑΛΤΕ_ΤΟ_APPS_SCRIPT_URL_ΕΔΩ') {
     try {
-      const res  = await fetch(APPS_SCRIPT_URL + '?action=getAll');
+      const params = new URLSearchParams({ action: 'getAllData', adminPin: ADMIN_PIN });
+      const res  = await fetch(APPS_SCRIPT_URL + '?' + params.toString());
       const json = await res.json();
-      if (Array.isArray(json.data)) adminData = json.data;
-    } catch(e) {}
+      if (json.success && Array.isArray(json.rows)) {
+        // Μετατροπή από Sheet rows σε format που χρησιμοποιεί ο admin panel
+        // Sheet στήλες: date, time, pin, userName, mode, section, score, total, pct, timeStr, result
+        adminData = json.rows.map(r => ({
+          ts:       r[0] + ' ' + r[1],   // ημερομηνία + ώρα
+          pin:      r[2],
+          name:     r[3],
+          mode:     r[4],
+          sections: r[5],
+          correct:  Number(r[6]),
+          total:    Number(r[7]),
+          pct:      Number(r[8]),
+          elapsed:  r[9],
+          result:   r[10]
+        }));
+      }
+    } catch(e) {
+      console.warn('Admin panel: αδυναμία φόρτωσης από Sheet:', e.message);
+    }
   }
 
-  // 2. Fallback: τοπικά δεδομένα
+  // 2. Merge με τοπικά δεδομένα (offline fallback)
   const local = JSON.parse(safeStorage.get('asep_scores') || '[]');
   if (local.length > 0) {
-    // Merge — αποφυγή duplicates με timestamp
-    const remoteTs = new Set(adminData.map(r => r.ts));
-    local.forEach(r => { if (!remoteTs.has(r.ts)) adminData.push(r); });
+    const remoteKeys = new Set(adminData.map(r => r.pin + '_' + r.ts));
+    local.forEach(r => {
+      const key = r.pin + '_' + (r.ts || '');
+      if (!remoteKeys.has(key)) adminData.push({
+        ts:       r.ts || '',
+        pin:      r.pin,
+        name:     r.userName || r.name || '—',
+        mode:     r.mode || 'official',
+        sections: r.section || r.sections || 'Όλες',
+        correct:  r.score   || r.correct  || 0,
+        total:    r.total   || 25,
+        pct:      r.pct     || 0,
+        elapsed:  r.timeSecs ? Math.floor(r.timeSecs/60) + ':' + String(r.timeSecs%60).padStart(2,'0') : '—',
+        result:   r.result  || (r.pct >= 60 ? 'pass' : 'fail')
+      });
+    });
   }
 
   // Ταξινόμηση: νεότερα πρώτα
